@@ -45,38 +45,6 @@ export class ContentComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    var basic_choropleth = new Datamap({
-      element: document.getElementById("basic"),
-      projection: 'mercator',
-      fills: {
-        defaultFill: "#ABDDA4",
-        authorHasTraveledTo: "#fa0fa0"
-      },
-      data: {
-        USA: { fillKey: "authorHasTraveledTo" },
-        JPN: { fillKey: "authorHasTraveledTo" },
-        ITA: { fillKey: "authorHasTraveledTo" },
-        CRI: { fillKey: "authorHasTraveledTo" },
-        KOR: { fillKey: "authorHasTraveledTo" },
-        DEU: { fillKey: "authorHasTraveledTo" },
-      }
-    });
-    
-    var colors = d3.scale.category10();
-    
-    window.setInterval(function() {
-      basic_choropleth.updateChoropleth({
-        USA: colors((Math.random() * 10).toString()),
-        RUS: colors((Math.random() * 100).toString()),
-        AUS: { fillKey: 'authorHasTraveledTo' },
-        BRA: colors((Math.random() * 50).toString()),
-        CAN: colors((Math.random() * 50).toString()),
-        ZAF: colors((Math.random() * 50).toString()),
-        IND: colors((Math.random() * 50).toString()),
-      });
-    }, 2000);
-
     this.recoveryTrendHeight = this.recoveryTrendDiv.nativeElement.offsetHeight
     this.deathTrendHeight = this.deathTrendDiv.nativeElement.offsetHeight
 
@@ -89,6 +57,11 @@ export class ContentComponent implements OnInit {
 
     this.aggregateService.subscribe(AggregateDataType.latestRecovery, (data) => {
       if (data) {
+        Object.keys(data).forEach(country => {
+          if (data[country].vsConfirmed === 0 && data[country].vsDeath === 0) {
+            delete data[country]
+          }
+        })
         this.latestRecoveryData = data
         if (this.latestRecoveryData['global']) {
           this.topTenColumns = []
@@ -114,6 +87,46 @@ export class ContentComponent implements OnInit {
             })
             return object
           })
+
+          var colors = 
+          d3.scale.linear()
+         .domain([d3.min(this.topTenRows.map(info => info.vsConfirmed)),d3.max(this.topTenRows.map(info => info.vsConfirmed))])
+          .range(["red", "green"]);
+          
+          // d3.scale.linear(d3.interpolateBlues)
+          // .domain([d3.min(this.topTenRows.map(info => info.vsConfirmed)), d3.max(this.topTenRows.map(info => info.vsConfirmed))]);
+          
+          const transformedObject = {}
+          const fillKeys = {}
+
+          this.topTenRows.forEach(data => {
+            if (data.country !== 'global') {
+              const countryCode = this.aggregateService.mappedToCode.find(mapped => mapped.name === data.country).code
+              const fill = {
+                fillKey: countryCode,
+                value: data.vsDeath,
+                value2: data.vsConfirmed
+              }
+              transformedObject[countryCode] = fill
+              fillKeys[countryCode] = colors(fill.value)
+            }
+          })
+          fillKeys['defaultFill'] = "rgba(0,0,0,0.2)"
+          var basic_choropleth = new Datamap({
+            element: document.getElementById("basic"),
+            projection: 'mercator',
+            responsive: false,
+            geographyConfig: {
+              highlightBorderColor: 'rgba(0,0,0,0.5)',
+              highlightFillColor: '#eee',
+             popupTemplate: function(geography, data) {
+                return `<div class="hoverinfo">${geography.properties.name } <br>Recovery vs Death: ${data.value}<br> Recovery vs Confirmed: ${data.value2}</div>`
+              },
+              highlightBorderWidth: 3
+            },
+            fills: fillKeys,
+            data: transformedObject
+          });
         }
       }
     })
@@ -124,6 +137,8 @@ export class ContentComponent implements OnInit {
     if (this.deathChart && this.recoveryChart) {
       this.deathChart.destroy()
       this.recoveryChart.destroy()
+      document.getElementById('recoveryTrend').style.height = this.recoveryTrendHeight
+      document.getElementById('deathTrend').style.height = this.deathTrendHeight
     }
 
     const dateLabel = Object.keys(this.currentTrendData[countryCode].vsConfirmed)

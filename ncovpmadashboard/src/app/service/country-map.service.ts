@@ -5,6 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class CountryMapService {
 
+  constructor() {}
+  
   csvToJson = [
     {
       "country": "Afghanistan",

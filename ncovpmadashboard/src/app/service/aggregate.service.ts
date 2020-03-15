@@ -3,6 +3,7 @@ import { RetrieveService, RetrieveDataType, Channel } from './retrieve.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators'
 import * as moment from 'moment';
+import { CountryMapService } from './country-map.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,9 @@ export class AggregateService {
   channel$: Channel[]
   allCountries: string[]
 
-  constructor(private retrieveService: RetrieveService) {
+  mappedToCode: {name: string, code: string}[]
+
+  constructor(private retrieveService: RetrieveService, private countryMapService: CountryMapService) {
     this.channel$ = []
     for (let enumItem in AggregateDataType) {
       this.channel$[enumItem] = {subscribers$: new BehaviorSubject(0), value: null};
@@ -33,6 +36,15 @@ export class AggregateService {
       this.allCountries = Array.from(new Set(data.confirmed.locations.map(loc => {
         return loc.country
       })))
+
+      this.mappedToCode = this.allCountries.map(country => {
+        const twoDigitCode = data.confirmed.locations.find(loc => loc.country === country).country_code
+        const threeDigitCode = this.countryMapService.csvToJson.find(countryObj => countryObj["Alpha-2 code"] === twoDigitCode)
+        return {
+          name: country,
+          code: threeDigitCode ? threeDigitCode["Alpha-3 code"] : "Unknown"
+        }
+      })
       this.assembleLatestRecoveryData(data)
 
       let today = moment.utc(data.confirmed.last_updated).format("M/D/YY")

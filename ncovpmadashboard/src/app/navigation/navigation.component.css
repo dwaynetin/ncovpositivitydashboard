@@ -1,3 +1,20 @@
-nav {
-    height: 50px
+
+
+
+@media (min-width: 10px) and (max-width: 767.98px) {
+    nav {
+        height: auto
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1198.98px) {
+    nav {
+        height: 50px
+    }
+}
+
+@media (min-width: 1200px) {
+    nav {
+        height: 50px
+    }
 }
