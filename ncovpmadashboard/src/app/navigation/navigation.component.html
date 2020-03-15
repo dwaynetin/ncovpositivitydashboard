@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">COVID-19 Global Recovery Trend {{dateToday ? 'As of ' + dateToday : ''}}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+      </ul>
+      <form class="form-inline">
+        <label for="exampleFormControlSelect1" style="color: white">Countries: </label>
+        <select class="form-control ml-1" (change)="onChange($event.target.value)" id="exampleFormControlSelect1">
+        <option>global</option>
+        <option *ngFor="let country of countries">{{country}}</option>
+        </select>
+      </form>
+    </div>
+  </nav>
