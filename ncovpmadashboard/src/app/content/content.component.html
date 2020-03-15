@@ -11,7 +11,7 @@
                         </div>
                     </div>
                     <div class="row h-75 text-center d-flex align-items-center">
-                        <div class="w-100" style="font-size: 6vw">
+                        <div class="w-100" style="font-size: 6vw" *ngIf="latestRecoveryData">
                             {{latestRecoveryData[_selected]['vsConfirmed'] | number: '.0-2'}}
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="row h-75 text-center d-flex align-items-center">
-                        <div class="w-100" style="font-size: 6vw">
+                        <div class="w-100" style="font-size: 6vw" *ngIf="latestRecoveryData">
                             {{latestRecoveryData[_selected]['vsDeath'] | number: '.0-2'}}
                         </div>
                     </div>

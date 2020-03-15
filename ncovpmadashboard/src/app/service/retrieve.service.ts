@@ -4,6 +4,7 @@ import { Location } from '@angular/common'
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { of, BehaviorSubject } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class RetrieveService {
   channel$: Channel[]
 
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private spinnerService: NgxSpinnerService) {
+    this.spinnerService.show()
     this.channel$ = []
     for (let enumItem in RetrieveDataType) {
       this.channel$[enumItem] = {subscribers$: new BehaviorSubject(0), value: null};

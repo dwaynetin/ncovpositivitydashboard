@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators'
 import * as moment from 'moment';
 import { CountryMapService } from './country-map.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AggregateService {
 
   mappedToCode: {name: string, code: string}[]
 
-  constructor(private retrieveService: RetrieveService, private countryMapService: CountryMapService) {
+  constructor(private retrieveService: RetrieveService, private countryMapService: CountryMapService, private spinnerService: NgxSpinnerService) {
     this.channel$ = []
     for (let enumItem in AggregateDataType) {
       this.channel$[enumItem] = {subscribers$: new BehaviorSubject(0), value: null};
@@ -171,6 +172,9 @@ export class AggregateService {
 
     this.channel$[AggregateDataType.recoveryTrend].value = assembledData;
     this.channel$[AggregateDataType.recoveryTrend].subscribers$.next(assembledData);
+
+    /** spinner ends after 5 seconds */
+    this.spinnerService.hide();
   }
 
 }
