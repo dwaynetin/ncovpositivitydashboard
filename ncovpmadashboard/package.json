@@ -25,7 +25,7 @@
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",
     "datamaps": "^0.5.9",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "moment": "^2.24.0",
     "ngx-spinner": "^9.0.1",
     "rxjs": "~6.4.0",
